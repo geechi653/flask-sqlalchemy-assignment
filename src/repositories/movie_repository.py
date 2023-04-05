@@ -1,20 +1,31 @@
 class MovieRepository:
 
     def get_all_movies(self):
-        # TODO get all movies from the DB
-        return None
+        session = Session()
+        movies = session.query(Movie).all()
+        session.close()
+        return movies
 
     def get_movie_by_id(self, movie_id):
-        # TODO get a single movie from the DB using the ID
-        return None
+        session = Session()
+        movie = session.query(Movie).filter_by(id=movie_id).first()
+        session.close()
+        return movie
 
     def create_movie(self, title, director, rating):
-        # TODO create a new movie in the DB
-        return None
+        session = Session()
+        movie = Movie(title=title, director=director, rating=rating)
+        session.add(movie)
+        session.commit()
+        session.close()
+        return movie.id
 
     def search_movies(self, title):
-        # TODO get all movies matching case insensitive substring (SQL LIKE, use google for how to do with SQLAlchemy)
-        return None
+        session = Session()
+        movies = session.query(Movie).filter(Movie.title.ilike(f'%{title}%')).all()
+        session.close()
+        return movies
+
 
 
 # Singleton to be used in other modules
