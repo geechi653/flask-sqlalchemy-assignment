@@ -1,32 +1,24 @@
 class MovieRepository:
 
+    def __init__(self, db_url):
+        engine = create_engine(db_url)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+
     def get_all_movies(self):
-        session = Session()
-        movies = session.query(Movie).all()
-        session.close()
+        movies = self.session.query(Movie).all()
         return movies
 
     def get_movie_by_id(self, movie_id):
-        session = Session()
-        movie = session.query(Movie).filter_by(id=movie_id).first()
-        session.close()
+        movie = self.session.query(Movie).get(movie_id)
         return movie
 
     def create_movie(self, title, director, rating):
-        session = Session()
         movie = Movie(title=title, director=director, rating=rating)
-        session.add(movie)
-        session.commit()
-        session.close()
+        self.session.add(movie)
+        self.session.commit()
         return movie.id
 
     def search_movies(self, title):
-        session = Session()
-        movies = session.query(Movie).filter(Movie.title.ilike(f'%{title}%')).all()
-        session.close()
+        movies = self.session.query(Movie).filter(Movie.title.ilike(f'%{title}%')).all()
         return movies
-
-
-
-# Singleton to be used in other modules
-movie_repository_singleton = MovieRepository()
